@@ -1,0 +1,62 @@
+<html>
+	<head> 
+		<meta charset="UTF-8">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/mode/javascript/javascript.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" /> <!-- jstree theme-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+		<!-- jstree cdn --->
+		
+		<title>Code Mirror</title>
+	</head>
+	
+	<body>
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+		  	
+		   
+		  
+		  
+		  <input type="hidden" class="useremail" value="<%= userEmail %>">
+		  
+		  <input type="hidden" class="username" value="<%= userName %>">
+		  
+		  
+		  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+			  <h5 class="my-0 mr-md-auto font-weight-normal">JOON</h5>
+			  <nav class="my-2 my-md-0 mr-md-3">    
+				  <button type="button" id="chat" class="btn btn-outline-primary">채팅</button>	
+				  <button type="button" id="fileM" class="btn btn-outline-warning">파일 매니저</button>
+			  </nav>
+			  <a class="btn btn-outline-primary" href="/logout">로그아웃</a>
+		</div>
+		  <script src="/editor.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script> <!-- socket io script-->
+		  <div class="chat"></div>
+		  
+		  <div class="fileM">
+		
+		  <pre style="white-space : pre-line;" id="console" class="alert alert-danger" role="alert"></pre>
+			  <button id = "run" type="button" class="btn btn-success">Run </button>
+			  <button id = "save" type="button" class="btn btn-light">
+				  Save
+			  </button>
+			<div id="usersCode">
+			<form action="/runCode" method="POST">
+		    
+			
+			<div id="jstree_demo_div">
+					
+			</div>
+		    <textarea class="codemirror-textarea">
+			
+			</textarea>
+				</form>
+			  </div>
+			  
+		</div>
+	</body>
+</html>

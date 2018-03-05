@@ -12,6 +12,7 @@ mongoose.connect('mongodb://localhost/testForAuth');
 var db = mongoose.connection;
 var Chat = require('./models/chat');
 
+app.set('socketio',io);
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {

@@ -5,6 +5,7 @@ var path = require('path');
 var ejs = require('ejs');
 var fs = require('fs');
 var PythonShell = require('python-shell');
+var toString = require('stream-to-string');
 // GET route for reading data
 router.get('/', function (req, res, next) {
 	console.log(req.session);
@@ -136,17 +137,19 @@ router.get('/logout', function (req, res, next) {
 // POST for (file save) and Run it.
 router.post('/runCode', function (req,res,next){
 	var code = req.body.code;
-	var userName = req.body.userName;
-	var fileName = userName +'.py';
-	var writeStream = fs.createWriteStream('/tmp2/'+fileName);
+	//var userName = req.body.userName;
+	var path = req.body.path;
+	console.log(path);
+	var writeStream = fs.createWriteStream(path);
 	writeStream.write(code);
 	writeStream.end();
-	
+	var upper_path = path.substring(0,path.lastIndexOf("/")+1);
+	var fileName = path.substring(path.lastIndexOf("/")+1,path.length);
  
 var options = {
   
   
-  scriptPath: '/tmp2/'
+  scriptPath: upper_path
   
 };
  
@@ -157,6 +160,25 @@ PythonShell.run(fileName, options, function (err, results) {
   
   res.send({isErrorExist: isErrorExist,results: results, err: err});
 });
+	
+});
+
+// POST for file save
+router.post('/saveCode',function(req,res,next){
+	var code = req.body.code;
+	var path = req.body.path;
+	var writeStream = fs.createWriteStream(path);
+	writeStream.write(code);
+	writeStream.end();
+});
+
+//POST for show code 
+router.post('/showCode',function(req,res,next){
+	var path = req.body.path;
+	readStream = fs.createReadStream(path);
+	toString(readStream,function(err,msg){
+				res.send({code : msg});
+	});
 	
 });
 

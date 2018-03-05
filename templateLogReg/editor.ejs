@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/codemirror.css">
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.29.0/mode/javascript/javascript.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+		<link rel ="stylesheet" href="/css/codemirror_theme/panda-syntax.css"><!-- code mirror theme -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" /> <!-- jstree theme-->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 		<!-- jstree cdn --->
@@ -47,13 +48,20 @@
 			<div id="usersCode">
 			<form action="/runCode" method="POST">
 		    
-			
-			<div id="jstree_demo_div">
-					
+			<div class="row">	
+				<div class="col-3">
+					<div id="jstree_demo_div">
+
+					</div>
+				</div>
+				<div class="col-9">
+					<textarea class="codemirror-textarea">
+
+					</textarea>
+
+				</div>
+				
 			</div>
-		    <textarea class="codemirror-textarea">
-			
-			</textarea>
 				</form>
 			  </div>
 			  

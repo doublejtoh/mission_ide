@@ -11,7 +11,7 @@ var currFilePath; // 현재 열린 파일의 path
 $(document).ready(function(){
 	$("#console").hide();
 	var code = $(".codemirror-textarea")[0]; 
-	 editor = CodeMirror.fromTextArea(code,{lineNumbers : true,   onChange: function(){editor.save()}}); 
+	 editor = CodeMirror.fromTextArea(code,{lineNumbers : true,   onChange: function(){editor.save();}, theme: "panda-syntax"}); 
 	var $runBtn = $("#run");
 	var $saveBtn = $("#save");
 	var $userName = $(".username").val(); 
@@ -25,11 +25,21 @@ $(document).ready(function(){
 					$("#console").append(JSONtoString(data.err));
 					$("#console").appendTo("#usersCode"); 
 					$("#console").show(); console.log(data.err);
-				} else{
+				} else if(!data.isErrorExist){
 					$("#console").empty(); 
-					$("#console").append(data.results); 
+					console.log(data.results);
+					data.results.forEach(function(item){
+						$("#console").append(item+"<br>");
+					});
 					$("#console").appendTo("#usersCode");
-					$("#console").show(); }},
+					$("#console").show(); }
+				else{ // c or c++ or python 파일이 아니면 
+					$("#console").empty(); 
+					$("#console").append("c,c++,python 파일이 아닙니다. ");
+					$("#console").appendTo("#usersCode");
+					$("#console").show(); 
+				}
+			},
 			error: function(xhr,status, error){
 				alert(error);
 			}

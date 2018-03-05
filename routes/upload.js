@@ -187,7 +187,7 @@ router.post('/', function(req, res, next) {
 				   
 				   getFiles(root_dir,files,dirs);
 				    console.log(files,dirs);
-				   fs_json_arr.push({"id" : root_dir, "parent" :"#", "text" : root_dir.substring(root_dir.lastIndexOf("/")+1,root_dir.length)});
+				   fs_json_arr.push({"id" : root_dir, "parent" :"#", "text" : "Project","icon" : "https://www.jstree.com/static/3.2.1/assets/images/tree_icon.png"});
 					dirs.forEach(function(dir){					
 						fs_json_arr.push({"id": dir,"parent" : dir.substring(0,dir.lastIndexOf("/")),"text" : dir.substring(dir.lastIndexOf("/")+1,dir.length)});
 					});
@@ -201,7 +201,7 @@ router.post('/', function(req, res, next) {
 					});
 					console.log(fs_json_arr);
 				   
-				    jsonWS = fs.createWriteStream('/workspace/login_example/authenticationIntro/templateLogReg/project_json_uploads/'+userEmail+'.json');
+				    jsonWS = fs.createWriteStream('/workspace/mission_ide/mission_ide/templateLogReg/project_json_uploads/'+userEmail+'.json');
 				   	jsonWS.write(JSON.stringify(fs_json_arr));
 				   	jsonWS.end();
 				   return res.render(path.join(__dirname, '../templateLogReg/','editor.ejs'),{userEmail: userEmail, userName: userName});

@@ -5,6 +5,7 @@ var path = require('path');
 var ejs = require('ejs');
 var fs = require('fs');
 var PythonShell = require('python-shell');
+var compiler = require('compilex');
 var toString = require('stream-to-string');
 // GET route for reading data
 router.get('/', function (req, res, next) {
@@ -145,21 +146,68 @@ router.post('/runCode', function (req,res,next){
 	writeStream.end();
 	var upper_path = path.substring(0,path.lastIndexOf("/")+1);
 	var fileName = path.substring(path.lastIndexOf("/")+1,path.length);
- 
-var options = {
-  
-  
-  scriptPath: upper_path
-  
-};
- 
-PythonShell.run(fileName, options, function (err, results) {
-	var isErrorExist = false;
-  if (err) isErrorExist = true;
-  // results is an array consisting of messages collected during execution
-  
-  res.send({isErrorExist: isErrorExist,results: results, err: err});
-});
+	if(fileName.match(/.py/)){ // python 파일이라면 
+		var options = {
+
+		  encoding : 'utf-8',
+		  scriptPath: upper_path
+		  //mode: 'text',
+		  //pythonOptions: ['-u']
+
+		};
+
+		PythonShell.run(fileName, options, function (err, results) {
+			var isErrorExist = false;
+			if (err) isErrorExist = true;
+			// results is an array consisting of messages collected during execution
+
+			res.send({isErrorExist: isErrorExist,results: results, err: err});
+		});		
+	}
+	else if(fileName.match(/.cpp/)){ // cpp 파일이라면
+		var options = {stats : true}; // prints status on console.
+		compiler.init(options);
+		var envData = { OS : "linux", cmd: "gpp"};
+		var readStream = fs.createReadStream(path);
+		var isErrorExist = false;
+		toString(readStream,function(err,msg){
+			compiler.compileCPP(envData, msg, function (data){
+			if(data.error !== undefined)// compile 에러 존재할 시
+			{
+				isErrorExist = true;
+			}
+			console.log(data.output);
+			res.send({isErrorExist: isErrorExist, results: [data.output], err: err });
+			
+		});	
+		});
+		
+	}
+	else if(fileName.match(/.c/)){ // c 파일 이라면 
+		var options = {stats : true}; 
+		compiler.init(options);
+		var envData = { OS : "linux", cmd: "gcc"};
+		var readStream = fs.createReadStream(path);
+		var isErrorExist = false;
+		toString(readStream,function(err,msg){
+			compiler.compileCPP(envData, msg, function (data){
+			if(data.error !== undefined)// compile 에러 존재할 시
+			{
+				isErrorExist = true;
+			}
+			
+			res.send({isErrorExist: isErrorExist, results: [data.output], err: err });
+			
+		});
+		});
+	
+		
+	}
+	else{ // c, c++,python파일이 아니면 
+		res.send({});
+	}
+	
+
 	
 });
 

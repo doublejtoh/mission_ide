@@ -29,9 +29,13 @@ function getFiles (dir,files_,dirs_){
 	for (var i in files){
 		var name = dir + '/' + files[i];
 		if(fs.statSync(name).isDirectory()){
-			dirs_.push(name);
-			console.log(name);
-			getFiles(name, files_,dirs_);
+			if(name.substring(name.lastIndexOf("/")+1,name.length) === "__MACOSX"){ // 파일명이 __MACOSX이면 do nothing.
+				
+			}
+			else{
+				dirs_.push(name);
+				getFiles(name, files_,dirs_);
+			}
 		}
 		else{
 			console.log(name);
@@ -166,7 +170,9 @@ router.post('/', function(req, res, next) {
 	
 	
 //		   var readStream = fs.createReadStream('/tmp2/'+temp_filename); //원래 코드
-			
+			console.log(temp_filename);
+			var d = new Date();
+			var date = d.getFullYear()+'-'+(d.getMonth() + 1) +'-'+d.getDate()+'-'+d.getHours()+'-'+d.getMinutes()+'-'+d.getSeconds();
 			var unzipper = new DecompressZip('/tmp2/'+temp_filename);
 			   unzipper.on('error',function(err){
 				   console.log(err);
@@ -175,13 +181,14 @@ router.post('/', function(req, res, next) {
 			   unzipper.on('extract',function(log){
 				   
 				var root = temp_filename.substring(0,temp_filename.lastIndexOf("."));
-				root_dir = '/user_storage/'+root;
+				
+				root_dir = '/user_storage/'+userEmail+'/'+date;
 				   
 				   
 				   getFiles(root_dir,files,dirs);
 				    console.log(files,dirs);
 				   fs_json_arr.push({"id" : root_dir, "parent" :"#", "text" : root_dir.substring(root_dir.lastIndexOf("/")+1,root_dir.length)});
-					dirs.forEach(function(dir){
+					dirs.forEach(function(dir){					
 						fs_json_arr.push({"id": dir,"parent" : dir.substring(0,dir.lastIndexOf("/")),"text" : dir.substring(dir.lastIndexOf("/")+1,dir.length)});
 					});
 					files.forEach(function(file){											if(file.substring(file.lastIndexOf(".")+1,file.length) == "DS_Store"){//"DS_STORE 파일이면 do nothing"
@@ -235,7 +242,7 @@ router.post('/', function(req, res, next) {
 				   
 			   });
 			   unzipper.extract({
-				  path: '/user_storage'				  
+				  path: '/user_storage/'+userEmail+'/'+date				  
 			   });
 			   
 		

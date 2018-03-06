@@ -38,23 +38,38 @@
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script> <!-- socket io script-->
 		  <div class="chat"></div>
 		  
+		<div class="container">
+			
+		
 		  <div class="fileM">
 		
-		  <pre style="white-space : pre-line;" id="console" class="alert alert-danger" role="alert"></pre>
-			  <button id = "run" type="button" class="btn btn-success">Run </button>
-			  <button id = "save" type="button" class="btn btn-light">
-				  Save
-			  </button>
+		<div class="consoleDiv">
+			<p class="font-italic text-danger">results..</p>
+			<pre style="white-space : pre-line;" id="console" class="alert alert-danger" role="alert"></pre>	  			
+		</div>
+		
+			  <div class="row">
+				<div class="btn col-md-2 offset-md-10">
+				<button id = "run" type="button" class="btn btn-success">Run </button>
+				  <button id = "save" type="button" class="btn btn-light">
+					  Save
+				</button>	  
+			    
+			  </div>
+				  
+			  </div>
+			  	
+			  
 			<div id="usersCode">
 			<form action="/runCode" method="POST">
 		    
 			<div class="row">	
-				<div class="col-3">
+				<div class="col-4">
 					<div id="jstree_demo_div">
 
 					</div>
 				</div>
-				<div class="col-9">
+				<div class="col-8">
 					<textarea class="codemirror-textarea">
 
 					</textarea>
@@ -63,8 +78,18 @@
 				
 			</div>
 				</form>
+				
+				<div class="inputConsoleDiv">
+					<p class="font-italic text-danger">Inputs..</p>
+					<textarea id="inputConsole" class="alert alert-info" role="alert" placeholder="Write Down all the inputs for the program." style="width:100%; border:1;" rows=5></textarea>		
+				</div>
+				
+				
+		  
 			  </div>
 			  
 		</div>
+		</div>
+		
 	</body>
 </html>

@@ -135,34 +135,93 @@ router.get('/logout', function (req, res, next) {
   }
 });
 
-// POST for (file save) and Run it.
+// POST for and Run code.
 router.post('/runCode', function (req,res,next){
 	var code = req.body.code;
 	//var userName = req.body.userName;
 	var path = req.body.path;
+	
+	var isInput = req.body.isInput; //input이 있는가?
+	isInput = (isInput == 'true');
+	var input = req.body.input; // input
 	console.log(path);
+	
 	var writeStream = fs.createWriteStream(path);
 	writeStream.write(code);
 	writeStream.end();
+	
 	var upper_path = path.substring(0,path.lastIndexOf("/")+1);
 	var fileName = path.substring(path.lastIndexOf("/")+1,path.length);
 	if(fileName.match(/.py/)){ // python 파일이라면 
-		var options = {
-
-		  encoding : 'utf-8',
-		  scriptPath: upper_path
-		  //mode: 'text',
-		  //pythonOptions: ['-u']
-
-		};
-
-		PythonShell.run(fileName, options, function (err, results) {
+		
+		var options ;
+		if(isInput){ // input이 있을 경우
+			
+			var options = {stats: true};
+			compiler.init(options);
+			var envData = { OS: "linux"};
+			var readStream = fs.createReadStream(path);
 			var isErrorExist = false;
-			if (err) isErrorExist = true;
-			// results is an array consisting of messages collected during execution
+			toString(readStream,function(err,msg){
+				var to =setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				compiler.compilePythonWithInput(envData, msg, input, function(data){
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+											
+					}	
+					clearTimeout(to); // timeout 해제
+					console.log(data.error,data.output);
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error , isPythonCode: true});	
+				});	
+			});
+			
+		}
+		else{ // input이 없을 경우
+			/*
+			options = {
 
-			res.send({isErrorExist: isErrorExist,results: results, err: err});
-		});		
+			  encoding : 'utf-8',
+			  scriptPath: upper_path
+			  //mode: 'text',
+			  //pythonOptions: ['-u']
+
+			};
+			var to =setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+			PythonShell.run(fileName, options, function (err, results) {
+				var isErrorExist = false;
+				if (err) isErrorExist = true;
+				// results is an array consisting of messages collected during execution
+				clearTimeout(to);
+				res.send({isErrorExist: isErrorExist,results: results, err: err, isPythonCode: true});
+			});
+			*/
+			var options = {stats: true};
+			compiler.init(options);
+			var envData = { OS: "linux"};
+			var readStream = fs.createReadStream(path);
+			var isErrorExist = false;
+			toString(readStream,function(err,msg){
+				var to =setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				compiler.compilePython(envData, msg, function(data){
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+											
+					}	
+					clearTimeout(to); // timeout 해제
+					console.log(data.error,data.output);
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error ,isPythonCode: true});	
+				});	
+			});
+		}
+		
 	}
 	else if(fileName.match(/.cpp/)){ // cpp 파일이라면
 		var options = {stats : true}; // prints status on console.
@@ -171,15 +230,42 @@ router.post('/runCode', function (req,res,next){
 		var readStream = fs.createReadStream(path);
 		var isErrorExist = false;
 		toString(readStream,function(err,msg){
-			compiler.compileCPP(envData, msg, function (data){
-			if(data.error !== undefined)// compile 에러 존재할 시
-			{
-				isErrorExist = true;
+			console.log(isInput);
+			if(isInput === true){ //input이 있을 경우
+				console.log('input잇음');
+				var to =setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				compiler.compileCPPWithInput(envData, msg, input, function(data){
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+											
+					}	
+					clearTimeout(to); // timeout 해제
+					console.log(data.error,data.output);
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error });	
+				});
 			}
-			console.log(data.output);
-			res.send({isErrorExist: isErrorExist, results: [data.output], err: err });
-			
-		});	
+			else{
+				
+				console.log("input없음");
+				var to = setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				
+				compiler.compileCPP(envData, msg, function (data){
+					
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+					}							
+					console.log(data.error);
+					clearTimeout(to); //timeout 해제
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error });
+
+				});	
+			}
 		});
 		
 	}
@@ -190,20 +276,46 @@ router.post('/runCode', function (req,res,next){
 		var readStream = fs.createReadStream(path);
 		var isErrorExist = false;
 		toString(readStream,function(err,msg){
-			compiler.compileCPP(envData, msg, function (data){
-			if(data.error !== undefined)// compile 에러 존재할 시
-			{
-				isErrorExist = true;
+			console.log(typeof isErrorExist);
+			console.log(typeof isInput);
+			if(isInput === true){ //input이 있는 경우
+				console.log("input 잇음");
+				var to = setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				compiler.compileCPPWithInput(envData, msg, input, function(data){
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+					}
+					console.log(data.error);
+					clearTimeout(to);
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error });
+				});
 			}
-			
-			res.send({isErrorExist: isErrorExist, results: [data.output], err: err });
-			
-		});
+			else{ //input이 없는 경우
+				console.log("input없음");
+				var to = setTimeout(function(){
+					res.send({ isErrorExist : true, err: "Timeout - some common reasons for Timeout. Your Program may have an endless loop. Please check the program and try again or contact joonhyun.jeong@goorm.io"});
+				}, 7000); // 7초 뒤에는 오류라고 console에 찍어줌.
+				compiler.compileCPP(envData, msg, function (data){
+					if(data.error !== undefined)// compile 에러 존재할 시
+					{
+						isErrorExist = true;
+					}
+					console.log(data.error);
+					clearTimeout(to);
+					res.send({isErrorExist: isErrorExist, results: [data.output], err: data.error });
+
+				});	
+			}
 		});
 	
 		
 	}
 	else{ // c, c++,python파일이 아니면 
+		console.log("java");
+		
 		res.send({});
 	}
 	

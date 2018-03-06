@@ -9,42 +9,117 @@ function JSONtoString(object) {
 var editor;
 var currFilePath; // 현재 열린 파일의 path
 $(document).ready(function(){
-	$("#console").hide();
+	$(".consoleDiv").hide();
+	
 	var code = $(".codemirror-textarea")[0]; 
 	 editor = CodeMirror.fromTextArea(code,{lineNumbers : true,   onChange: function(){editor.save();}, theme: "panda-syntax"}); 
 	var $runBtn = $("#run");
 	var $saveBtn = $("#save");
 	var $userName = $(".username").val(); 
 	$runBtn.click(function(){ var $code = editor.getValue();
-	$.ajax({ type:"POST",
+		/*
+		var isInput = false;
+		var input ;
+		var codeWithoutComment = $code.replace(/(?:\/\*(?:[\s\S]*?)\*\/)|(?:[\s;]+\/\/(?:.*)$)/gm, '');	
+		
+			if(codeWithoutComment.match(/cin/)||codeWithoutComment.match(/scanf/)||codeWithoutComment.match(/input/)){ //입력을 받는 코드라면
+			
+			
+			isInput = true;
+			$('#console').hide();
+			$("#inputConsole").appendTo("#usersCode");
+			$("#inputConsole").show();
+			$runBtn.click(function(){
+				input = $("#inputConsole").val();
+				console.log(input);
+			});
+		}
+		else{ // 입력을 받는 코드가 아니라면 
+			isInput = false;
+			$.ajax({ type:"POST",
+				url:"/runCode",
+				data: {"code": $code,"path" : currFilePath,"isInput" : isInput, "input" : input},
+				success: function(data){
+					$("#inputConsole").hide();
+					if(data.isErrorExist !== undefined){ // c or c++ or python 파일이라면
+					if(data.isErrorExist){
+						$("#console").empty(); 
+						if(data.isPythonCode){ // python 코드라면
+							$("#console").append(JSONtoString(data.err));	
+						}
+						else{ // c or c++코드라면
+							$("#console").append(data.err);
+						}
+						$("#console").appendTo("#usersCode"); 
+						$("#console").show(); console.log(data.err);
+					} else if(!data.isErrorExist){ // 에러가 존재하지 않으면
+						$("#console").empty(); 
+						console.log(data.results);
+						data.results.forEach(function(item){						
+							$("#console").append(item+"<br>");
+						});
+						$("#console").appendTo("#usersCode");
+						$("#console").show(); }
+					}
+					else{ // c or c++ or python 파일이 아니면 
+						$("#console").empty(); 
+						$("#console").append("c,c++,python 파일이 아닙니다. ");
+						$("#console").appendTo("#usersCode");
+						$("#console").show(); 
+					}
+				},
+				error: function(xhr,status, error){
+					alert(error);
+				}
+			});
+		}
+*/
+		var isInput = false;
+		var input = $("#inputConsole").val();
+		if(input!==""){
+			isInput = true;
+		}					
+		
+							 
+		$.ajax({ type:"POST",
 			url:"/runCode",
-			data: {"code": $code,"path" : currFilePath},
+			data: {"code": $code,"path" : currFilePath,"isInput" : isInput, "input" : input},
 			success: function(data){
+				
+				if(data.isErrorExist !== undefined){ // c or c++ or python 파일이라면
 				if(data.isErrorExist){
 					$("#console").empty(); 
-					$("#console").append(JSONtoString(data.err));
-					$("#console").appendTo("#usersCode"); 
-					$("#console").show(); console.log(data.err);
-				} else if(!data.isErrorExist){
+					if(data.isPythonCode){ // python 코드라면
+						$("#console").append(JSONtoString(data.err));	
+					}
+					else{ // c or c++코드라면
+						$("#console").append(data.err);
+					}
+					$(".consoleDiv").appendTo("#usersCode"); 
+					$(".consoleDiv").show(); console.log(data.err);
+				} else if(!data.isErrorExist){ // 에러가 존재하지 않으면
 					$("#console").empty(); 
 					console.log(data.results);
-					data.results.forEach(function(item){
+					data.results.forEach(function(item){						
 						$("#console").append(item+"<br>");
 					});
-					$("#console").appendTo("#usersCode");
-					$("#console").show(); }
+					$(".consoleDiv").appendTo("#usersCode");
+					$(".consoleDiv").show(); }
+				}
 				else{ // c or c++ or python 파일이 아니면 
 					$("#console").empty(); 
 					$("#console").append("c,c++,python 파일이 아닙니다. ");
-					$("#console").appendTo("#usersCode");
-					$("#console").show(); 
+					$(".consoleDiv").appendTo("#usersCode");
+					$(".consoleDiv").show(); 
 				}
 			},
 			error: function(xhr,status, error){
 				alert(error);
 			}
 		});
+							 
 	});
+							
 	$saveBtn.click(function(){ var $code = editor.getValue();
 		$.ajax({ type:"POST",
 			url:"/saveCode",

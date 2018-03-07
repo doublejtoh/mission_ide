@@ -7,6 +7,9 @@ var fs = require('fs');
 var PythonShell = require('python-shell');
 var compiler = require('compilex');
 var toString = require('stream-to-string');
+var Client = require('ssh2').Client;
+
+
 // GET route for reading data
 router.get('/', function (req, res, next) {
 	
@@ -75,6 +78,57 @@ router.post('/', function (req, res, next) {
 
 // GET route after registering
 router.get('/main', function (req, res, next) {
+	/*
+	var isCompileSuccess = true;
+	var spawn = require('child_process').spawn;
+	var cmd = spawn('gcc',['/user_storage/doublejtoh@naver.com/2018-3-7-1-2-12/C/Ccode/Input.c']);
+	cmd.stdout.on('data',(data) =>{
+		console.log('child stdout:\n${data}');		
+	});
+	cmd.stderr.on('data',(data) => {
+		isCompileSuccess = false;
+		console.error('child stderr:\n${data}');
+	});
+	
+	var exec1 = require('child_process').exec;
+	exec1('gcc /user_storage/doublejtoh@naver.com/2018-3-7-1-2-12/C/Ccode/Input.c',function(err,stdout,stderr){
+		if(err){
+			return console.error('exec error: ',err);	
+		}
+		else{
+			
+			console.log('stdout:2',stdout);
+			console.log('stderr', stderr);
+			
+			
+		}
+		
+	});
+	
+	if(isCompileSuccess){
+		
+		
+		var cmd2 = spawn('./a.out');
+		var ws = fs.createReadStream('/user_storage/example.txt');
+		//ws.pipe(cmd2.stdin);
+		console.log(cmd2);
+		cmd2.stdout.on('data',(data) => {
+			console.log(data);
+			console.log(data.toString());
+		});
+		cmd2.stderr.on('data',(data) =>{
+			console.error('child stderr:\n${data}');
+		});
+		cmd2.stdin.on('data',(data)=>{
+			console.log('data input 필요');
+		});
+
+	}
+	else{
+		
+	}
+	
+	*/
 	
 	console.log(req.session);
 	var userId = req.session.userId;
@@ -139,6 +193,8 @@ router.get('/logout', function (req, res, next) {
 
 // POST for and Run code.
 router.post('/runCode', function (req,res,next){
+	
+	
 	var code = req.body.code;
 	//var userName = req.body.userName;
 	var path = req.body.path;
@@ -332,6 +388,7 @@ router.post('/saveCode',function(req,res,next){
 	var writeStream = fs.createWriteStream(path);
 	writeStream.write(code);
 	writeStream.end();
+	res.send({isSaveSuccessed: true});
 });
 
 //POST for show code 

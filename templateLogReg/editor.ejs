@@ -35,6 +35,8 @@
 			  <a class="btn btn-outline-primary" href="/logout">로그아웃</a>
 		</div>
 		  <script src="/editor.js"></script>
+		  <link rel ="stylesheet" href="/xterm.css">
+		  <script src="/xterm.js"></script>
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script> <!-- socket io script-->
 		  <div class="chat"></div>
 		  
@@ -78,12 +80,22 @@
 				
 			</div>
 				</form>
+			<div class="input-group mb-3">
+			  <div class="input-group-prepend">
+				<div class="input-group-text">
+				  <input id = "interActiveModeOn"type="checkbox" aria-label="Checkbox for following text input">
+				</div>
+			  </div>
+				<label type="text" class="text-danger form-control" aria-label="Text input with checkbox" style="text-align : center;">interactive mode</label>
+			</div>				
 				
 				<div class="inputConsoleDiv">
 					<p class="font-italic text-danger">Inputs..</p>
 					<textarea id="inputConsole" class="alert alert-info" role="alert" placeholder="Write Down all the inputs for the program." style="width:100%; border:1;" rows=5></textarea>		
 				</div>
-				
+				<div id="terminal">
+					
+				</div>
 				
 		  
 			  </div>

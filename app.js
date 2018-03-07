@@ -11,6 +11,8 @@ var port = process.env.PORT;
 mongoose.connect('mongodb://localhost/testForAuth');
 var db = mongoose.connection;
 var Chat = require('./models/chat');
+var fs = require('fs');
+var SSHClient = require('ssh2').Client;
 
 app.set('socketio',io);
 //handle mongo error
@@ -170,6 +172,7 @@ io.on('connection', function(socket){
 			delete socket_ids[socket.username];
 			
 			
+			
 		}
 		
 	});	
@@ -187,6 +190,33 @@ io.on('connection', function(socket){
 		
 		
 	});
+	var conn = new SSHClient();
+	  conn.on('ready', function() {
+		socket.emit('data', '\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
+		conn.shell(function(err, stream) {
+		  if (err)
+			return socket.emit('data', '\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n');
+		  socket.on('data', function(data) {
+			stream.write(data);
+		  });
+		  stream.on('data', function(d) {
+			socket.emit('data', d.toString('binary'));
+		  }).on('close', function() {
+			conn.end();
+		  });
+		});
+	  }).on('close', function() {
+		socket.emit('data', '\r\n*** SSH CONNECTION CLOSED ***\r\n');
+	  }).on('error', function(err) {
+		socket.emit('data', '\r\n*** SSH CONNECTION ERROR: ' + err.message + ' ***\r\n');
+	  }).connect({
+		host: '13.124.195.10',
+		port: 54543,
+		username: 'root',
+		password: '3JGU#Y&K74qS%DjBH55:jQ',
+		readyTimeout: 99999
+	  });	
+	
 	
 	
 });

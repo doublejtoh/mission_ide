@@ -89,8 +89,12 @@ $(document).ready(function(){
 				if(data.isErrorExist !== undefined){ // c or c++ or python 파일이라면
 				if(data.isErrorExist){
 					$("#console").empty(); 
+					console.log(data.isPythonCode);
+					console.log(typeof data.isPythonCode);
 					if(data.isPythonCode){ // python 코드라면
-						$("#console").append(JSONtoString(data.err));	
+						console.log("들어옴");
+						console.log(data.err);
+						$('#console').append(data.err);
 					}
 					else{ // c or c++코드라면
 						$("#console").append(data.err);

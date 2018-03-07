@@ -36,9 +36,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-// serve static files from template
-app.use(express.static(__dirname + '/templateLogReg'));
-
 // include routes
 var routes = require('./routes/router');
 app.use('/', routes);
@@ -46,6 +43,10 @@ app.use('/', routes);
 // upload URL router
 var upload = require('./routes/upload');
 app.use('/upload',upload);
+
+// serve static files from template
+app.use(express.static(__dirname + '/templateLogReg')); // 이걸 routing 설정 위에 해버리면 라우팅 파일의 router.get('/')에 진입하지 않고 해당 정적파일중에서 찾아버린다.
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

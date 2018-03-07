@@ -9,13 +9,15 @@ var compiler = require('compilex');
 var toString = require('stream-to-string');
 // GET route for reading data
 router.get('/', function (req, res, next) {
-	console.log(req.session);
+	
+	console.log("hehe");
 	
 	if(req.session.userId!==undefined)// if logined, then redirect to main.
 		{
 			return res.redirect('/main');
 		}
-  return res.sendFile(path.join(__dirname + '/templateLogReg/index.html'));
+  return res.sendFile(path.join(__dirname ,'../templateLogReg/' ,'index.html'));
+
 });
 
 

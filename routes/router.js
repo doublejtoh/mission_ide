@@ -12,73 +12,72 @@ var Client = require('ssh2').Client;
 
 // GET route for reading data
 router.get('/', function (req, res, next) {
-	
-	console.log("hehe");
-	
-	if(req.session.userId!==undefined)// if logined, then redirect to main.
-		{
-			return res.redirect('/main');
-		}
-  return res.sendFile(path.join(__dirname ,'../templateLogReg/' ,'index.html'));
 
+	console.log("hehe");
+	// if logined, then redirect to main.
+	if(req.session.userId!==undefined){
+		return res.redirect('/main');
+	}
+	return res.sendFile(path.join(__dirname ,'../templateLogReg/' ,'index.html'));
 });
 
 
 //POST route for updating data
 router.post('/', function (req, res, next) {
-	
-	
-  // confirm that user typed same password twice
-  if (req.body.password !== req.body.passwordConf) {
-    var err = new Error('Passwords do not match.');
-    err.status = 400;
-    res.send("passwords dont match");
-    return next(err);
-  }
 
-  if (req.body.email &&
-    req.body.username &&
-    req.body.password &&
-    req.body.passwordConf) {
+	// confirm that user typed same password twice
+	if (req.body.password !== req.body.passwordConf){
+		var err = new Error('Passwords do not match.');
+		err.status = 400;
+		res.send("passwords dont match");
+		return next(err);
+	}
+	if (req.body.email &&
+		req.body.username &&
+		req.body.password &&
+		req.body.passwordConf) {
+		var userData = {
+			email: req.body.email,
+			username: req.body.username,
+			password: req.body.password,
+			passwordConf: req.body.passwordConf,
+		};
 
-    var userData = {
-      email: req.body.email,
-      username: req.body.username,
-      password: req.body.password,
-      passwordConf: req.body.passwordConf,
-    };
+		User.create(userData, function (error, user) {
+			if (error) {
+				return next(error);
+			} 
+			else {
+				req.session.userId = user._id;
+				return res.redirect('/main');
+			}
+		});
 
-    User.create(userData, function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        req.session.userId = user._id;
-        return res.redirect('/main');
-      }
-    });
-
-  } else if (req.body.logemail && req.body.logpassword) {
-    User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
-      if (error || !user) {
-        var err = new Error('Wrong email or password.');
-        err.status = 401;
-        return next(err);
-      } else {
-        req.session.userId = user._id;
-		req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // session 유지 시간 configuration: 1일
-        return res.redirect('/main');
-      }
-    });
-  } else {
-    var err = new Error('All fields required.');
-    err.status = 400;
-    return next(err);
-  }
+		}
+	else if (req.body.logemail && req.body.logpassword) {
+		User.authenticate(req.body.logemail, req.body.logpassword, function (error, user) {
+			if (error || !user) {
+				var err = new Error('Wrong email or password.');
+				err.status = 401;
+				return next(err);
+			}
+			else{
+				req.session.userId = user._id;
+				req.session.cookie.maxAge = 1000 * 60 * 60 * 24; // session 유지 시간 configuration: 1일
+				return res.redirect('/main');
+			}
+		});
+	}
+	else{
+		var err = new Error('All fields required.');
+		err.status = 400;
+		return next(err);
+	}
 });
 
 // GET route after registering
 router.get('/main', function (req, res, next) {
-	/*
+	/* child_process로 직접 컴파일 하려는 시도
 	var isCompileSuccess = true;
 	var spawn = require('child_process').spawn;
 	var cmd = spawn('gcc',['/user_storage/doublejtoh@naver.com/2018-3-7-1-2-12/C/Ccode/Input.c']);
@@ -89,25 +88,25 @@ router.get('/main', function (req, res, next) {
 		isCompileSuccess = false;
 		console.error('child stderr:\n${data}');
 	});
-	
+
 	var exec1 = require('child_process').exec;
 	exec1('gcc /user_storage/doublejtoh@naver.com/2018-3-7-1-2-12/C/Ccode/Input.c',function(err,stdout,stderr){
 		if(err){
 			return console.error('exec error: ',err);	
 		}
 		else{
-			
+
 			console.log('stdout:2',stdout);
 			console.log('stderr', stderr);
-			
-			
+
+
 		}
-		
+
 	});
-	
+
 	if(isCompileSuccess){
-		
-		
+
+
 		var cmd2 = spawn('./a.out');
 		var ws = fs.createReadStream('/user_storage/example.txt');
 		//ws.pipe(cmd2.stdin);
@@ -125,91 +124,83 @@ router.get('/main', function (req, res, next) {
 
 	}
 	else{
-		
+
 	}
-	
+
 	*/
-	
 	console.log(req.session);
 	var userId = req.session.userId;
-  User.findById(req.session.userId)
-    .exec(function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
-        } else {
-          return res.render(path.join(__dirname ,'../templateLogReg/' ,'main.ejs'),{userid: user._id,useremail: user.email, username: user.username });
-
-
-
-        }
-      }
-    });
+	User.findById(req.session.userId)
+	.exec(function (error, user){
+		if (error) {
+			return next(error);
+		} 
+		else{
+			if (user === null) {
+				var err = new Error('Not authorized! Go back!');
+				err.status = 400;
+				return next(err);
+			} 
+			else {
+				return res.render(path.join(__dirname ,'../templateLogReg/' ,'main.ejs'),{userid: user._id,useremail: user.email, username: user.username });
+			}
+		}
+	});
 });
+
 
 //GET route for chatting
 router.get('/chat',function (req,res,next){
 	var userId = req.session.userId;
-  User.findById(req.session.userId)
+  	User.findById(req.session.userId)
     .exec(function (error, user) {
-      if (error) {
-        return next(error);
-      } else {
-        if (user === null) {
-          var err = new Error('Not authorized! Go back!');
-          err.status = 400;
-          return next(err);
-        } else {
-          return res.render(path.join(__dirname ,'../templateLogReg/' ,'chat.ejs'),{userid: user._id,useremail: user.email, username: user.username });
-
-
-
-        }
-      }
-    });
+		if(error){
+			return next(error);
+		} 
+		else {
+			if (user === null) {
+				var err = new Error('Not authorized! Go back!');
+				err.status = 400;
+				return next(err);
+			}
+			else {
+				return res.render(path.join(__dirname ,'../templateLogReg/' ,'chat.ejs'),{userid: user._id,useremail: user.email, username: user.username });
+			}
+		}
+	});
 });
-
-
-
 
 
 // GET for logout logout
 router.get('/logout', function (req, res, next) {
-  if (req.session) {
-    // delete session object
-    req.session.destroy(function (err) {
-      if (err) {
-        return next(err);
-      } else {
-        return res.redirect('/');
-      }
-    });
-  }
+	if (req.session) {
+		// delete session object
+		req.session.destroy(function (err) {
+			if (err) {
+				return next(err);
+			} 
+			else {
+				return res.redirect('/');
+			}
+		});
+  	}
 });
 
 // POST for and Run code.
 router.post('/runCode', function (req,res,next){
-	
-	
+
 	var code = req.body.code;
 	//var userName = req.body.userName;
 	var path = req.body.path;
-	
 	var isInput = req.body.isInput; //input이 있는가?
 	isInput = (isInput == 'true');
-	var input = req.body.input; // input
-	console.log(path);
-	
+	var input = req.body.input; // input	
 	var writeStream = fs.createWriteStream(path);
 	writeStream.write(code);
 	writeStream.end();
-	
 	var upper_path = path.substring(0,path.lastIndexOf("/")+1);
 	var fileName = path.substring(path.lastIndexOf("/")+1,path.length);
+	
 	if(fileName.match(/.py/)){ // python 파일이라면 
 		
 		var options ;
@@ -372,17 +363,15 @@ router.post('/runCode', function (req,res,next){
 		
 	}
 	else{ // c, c++,python파일이 아니면 
-		console.log("java");
-		
 		res.send({});
 	}
 	
-
-	
 });
+
 
 // POST for file save
 router.post('/saveCode',function(req,res,next){
+	
 	var code = req.body.code;
 	var path = req.body.path;
 	var writeStream = fs.createWriteStream(path);
@@ -391,12 +380,14 @@ router.post('/saveCode',function(req,res,next){
 	res.send({isSaveSuccessed: true});
 });
 
+    
 //POST for show code 
 router.post('/showCode',function(req,res,next){
+    
 	var path = req.body.path;
 	readStream = fs.createReadStream(path);
 	toString(readStream,function(err,msg){
-				res.send({code : msg});
+		res.send({code : msg});
 	});
 	
 });

@@ -4,7 +4,11 @@
 		
 		<meta charset="UTF-8">
 		<title>Joon Talk</title>
-		<link rel="stylesheet" href="/css/chat.css">		
+		
+		<link rel="stylesheet" href="/css/chat.css">
+		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  		<script src="/chat.js"></script>		
 	</head>
 	<body>
 		<ul class="pages">
@@ -17,8 +21,6 @@
 				<input class="inputMessage" placeholder="귓속말을 보내시려면 '@닉네임 메시지내용'으로 입력하세요.  "/>
 			</li>
 		</ul>
-		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-  		<script src="/chat.js"></script>
+
 	</body>
 </html>

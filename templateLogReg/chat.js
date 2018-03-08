@@ -7,8 +7,6 @@ $(function(){
 		'#3b88eb', '#3824aa', '#a700ff', '#d300e7'				
 	];
 	
-	
-	 
 	// Initialize variables
 	var $window = $(window);
 	var $usernameInput = $('.usernameInput'); // input for username
@@ -16,7 +14,6 @@ $(function(){
 	var $inputMessage = $('.inputMessage'); // Input message input box
 	var $loginPage = $('.login.page');// Login page
 	var $chatPage = $('.chat.page'); // chatroom page
-	
 	var $userid = $('.userid');
 	var $useremail = $('.useremail');
 	var $username = $('.username');
@@ -25,10 +22,7 @@ $(function(){
 	var typing = false;
 	var lastTypingTime;
 	var $currentInput = $usernameInput.focus();
-	
 	var socket_ids = [];
-
-
 	//var mongoose = require('mongoose');// for db connection
 	/*
 	var db = mongoose.connection;
@@ -41,14 +35,12 @@ $(function(){
 	
 	var Chat = require('./models/chat');
 	*/
-	
 	var socket = io();
-	
-	
-	
+	/*
 	function checkLogin(){ // check if the user already logged in.
 		
 	}
+	*/
 	
 	function addMessageElement(el, options){
 		var $el = $(el);
@@ -234,10 +226,12 @@ $(function(){
 		var $usernameDiv = $('<span class="username"/>')
 		.text(data.username+"으로부터 귓속말 수신")
 		.css('color',getUsernameColor(data.username));
+		
 		var $messageBodyDiv = $('<span class="messageBody">')
 		.text(data.message);
 		
 		var typingClass = data.typing ? 'typing' : '';
+		
 		var $messageDiv = $('<li class="message"/>')
 		.data('username',data.username)
 		.css('color', '#F5A9F2')
@@ -251,20 +245,15 @@ $(function(){
 		var start = message.indexOf("@");
 		if(start !== 0) // 귓속말이 아닐경우
 		{
-
 			message = cleanInput(message);
 			if(message && connected){
 				$inputMessage.val('');
-
 				addChatMessage({
-
 					username: username,
 					message: message
 				});
 				socket.emit('new message', message);
 			}
-
-
 		}
 		else{
 			//cleanInput해줘야하는지 확인해야함.
@@ -273,14 +262,12 @@ $(function(){
 			message = message.substring(isWS+1,message.length); //메시지 내용
 			if(isWS == -1) // "@정준현" 이런식으로 입력했을 경우
 			{
-				
 				toWho = message.substring(start+1,message.length);
 				message = "";
 			}
 			
 			packet =
 				{
-
 					username: username, //보내는 사람
 					to: toWho, //받는 사람
 					message: message
@@ -288,19 +275,12 @@ $(function(){
 			
 			if(message && connected){
 				$inputMessage.val('');
-
 				addFromWhisperMessage(packet);
 				socket.emit('new whisper', packet);
-				
-				
-			}
-
-			
+			}	
 		}
-		
 	}
 
-	
 	//keyboard evenets
 	
 	$window.keydown(function (event){
@@ -361,39 +341,27 @@ $(function(){
 		}
 		data.forEach(function(chat){
 			
-			
 			if(chat.username === username){ //내가 보낸 채팅일 경우
-				if(chat.to !== null){ //귓속말 발신일 경우								
+				if(chat.to !== null){ //귓속말 발신일 경우	
 					addFromWhisperMessage(chat);
 				}	
-				else{// 일반 채팅일 경우
-					
+				else{// 일반 채팅일 경우	
 					addChatMessage(chat);
 				}
 			}
-			
 			else{ //다른 사람이 보낸 채팅일 경우
 				if(chat.to === username)// 귓속말 수신일 경우
 				{
-					addToWhisperMessage(chat);
-					
+					addToWhisperMessage(chat);	
 				}
 				else// 일반 채팅일 경우
-				{
-					
+				{	
 					addChatMessage(chat);
 				}
-				
-				
-					
-				
-				
-			}
-			
-			});
+			}	
+		});
 	});
 	socket.on('new message',function(data){
-		
 		addChatMessage(data);
 	});
 	
@@ -426,7 +394,6 @@ $(function(){
 	
 	socket.on('reconnect',function(){
 		log('you have been reconnected');
-		
 		if(username){
 			socket.emit('add user',username);
 		}
@@ -434,14 +401,13 @@ $(function(){
 	});
 	
 	socket.on('no such user',function(data){ //받는 사람이 대화방에 없으면	
-					
-					data.message = "귓속말을 보내려는 상대가 현재 대화방에 없습니다.";
-					addFromWhisperMessage(data);		
+		data.message = "귓속말을 보내려는 상대가 현재 대화방에 없습니다.";
+		addFromWhisperMessage(data);
 	});
 	
 	socket.on('whisper to myself',function(data){
-					data.message = "나에게 귓속말을 보낼 수 없습니다.";
-					addFromWhisperMessage(data);
+		data.message = "나에게 귓속말을 보낼 수 없습니다.";
+		addFromWhisperMessage(data);
 	});
 	
 	socket.on('reconnect_error',function(){

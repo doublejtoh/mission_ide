@@ -11,4 +11,6 @@ Front-end: Jquery, Bootstrap, CodeMirror.
 * Real Time Chat: Global chat room. Also supports "Whisper". usage example: "@ReceiverNickName message"
 
 
-<iframe width="640" height="360" src="https://www.youtube.com/embed/HPWznop03dg" frameborder="0" gesture="media" allowfullscreen=""></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/HPWznop03dg/0.jpg)](https://www.youtube.com/watch?v=HPWznop03dg)
+
+

@@ -10,7 +10,9 @@ Front-end: Jquery, Bootstrap, CodeMirror.
 * Interactive Code Executing: Through SSH connection, it can execute code interactively.
 * Real Time Chat: Global chat room. Also supports "Whisper". usage example: "@ReceiverNickName message"
 
+## DEMO
+Suggest 2x speed play. <br>
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/HPWznop03dg/0.jpg)](https://www.youtube.com/watch?v=HPWznop03dg)
+[![DEMO](https://img.youtube.com/vi/HPWznop03dg/0.jpg)](https://www.youtube.com/watch?v=HPWznop03dg)
 
 
